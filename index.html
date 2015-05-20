@@ -5,6 +5,10 @@
 <title>1DCA</title>
 </head>
 <body>
+	<div>
+		<h4>1dca - reload to get a random rule</h4>
+		<p id='p'></p>
+	</div>
 </body>
 <script>
 /*
@@ -151,6 +155,7 @@ function addLine(current) {
 
 window.onload = function() {
 	document.title = "Rule " + rule + " - " + document.title;
+	document.getElementById('p').innerText = "Rule " + rule;
 
 	var last = createLine();
 
@@ -167,6 +172,9 @@ window.onload = function() {
 
 </script>
 <style>
+div {
+	margin: 0 16px;
+}
 body {
 	margin: 16px 0;
 	overflow-y: scroll;
