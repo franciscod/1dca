@@ -104,9 +104,6 @@ function _automate(d) {
 
 	if (line == chunkHeight) {
 		line = 0;
-	}
-
-	if (!line) {
 		if (!newPage()) {
 			document.body.style.backgroundColor = "#EDB";
 			return;
@@ -129,7 +126,7 @@ function _automate(d) {
 }
 
 function newPage() {
-	if (!pages--) { return false;}
+	if (!--pages) { return false;}
 
 	var canvas = document.createElement('canvas');
 	canvas.width = chunkWidth ;
@@ -170,6 +167,8 @@ window.onload = function() {
 
 	document.body.style.backgroundColor = "#EEE";
 
+	newPage();
+	setTimeout(function() { window.scrollTo(0, 0); }, 0);
 	automateTimeout(last);
 }
 
