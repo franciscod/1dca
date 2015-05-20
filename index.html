@@ -37,8 +37,9 @@ var scaleFactor = 2;
 
 var _w  = Math.floor(document.body.clientWidth/32/scaleFactor);
 
-var rule;
+var drawTimeouts = [];
 
+var rule;
 var chunkWidth  = _w * 32;
 var chunkHeight = 320;
 var maxPages = -1; // -1 for unlimited
@@ -95,7 +96,7 @@ function step(d, w) {
 
 function automateTimeout(d) {
 	if (_automate(d)) {
-		setTimeout(function() {automateTimeout(step(d, chunkWidth))}, 1);
+		drawTimeouts.push(setTimeout(function() {automateTimeout(step(d, chunkWidth))}, 0));
 	}
 }
 
@@ -150,6 +151,12 @@ function clearPages() {
 	pages = maxPages;
 }
 
+function clearDrawTimeouts() {
+	for (var i=0; i<drawTimeouts.length; i++) {
+		clearTimeout(drawTimeouts[i]);
+	}
+}
+
 function addLine(current) {
 	var px = ctx.getImageData(0, line, chunkWidth , 1);
 
@@ -186,6 +193,7 @@ var Router = Backbone.Router.extend({
 function init() {
 	states = {};
 	line = 0;
+	clearDrawTimeouts();
 	clearPages();
 
 	document.title = "Rule " + rule + " - 1DCA";
@@ -218,7 +226,6 @@ $('#another').click(function(e){
 	e.preventDefault();
 	app.rule();
 });
-
 
 </script>
 <style>
