@@ -6,10 +6,15 @@
 </head>
 <body>
 	<div>
-		<h4>1dca - reload to get a random rule</h4>
-		<p id='p'></p>
+		<h4>1dca</h4>
+		<p><span id='s'></span>
+		| <a href='#again'>retry with random data</a> | <a href='#another'>get another rule</a>
+		</p>
 	</div>
 </body>
+<script src='js/underscore-min.js'></script>
+<script src='js/backbone-min.js'></script>
+<script src='js/jquery.min.js'></script>
 <script>
 /*
 	Copyright 2015 Francisco Demartino
@@ -32,15 +37,16 @@ var scaleFactor = 2;
 
 var _w  = Math.floor(document.body.clientWidth/32/scaleFactor);
 
-var rule = Math.floor(Math.random() * 256);
+var rule;
 
 var chunkWidth  = _w * 32;
 var chunkHeight = 320;
-var pages = -1; // -1 for unlimited
+var maxPages = -1; // -1 for unlimited
 
-var states = {};
-var line = 0;
+var states;
+var line;
 var ctx;
+var pages;
 
 function createLine() {
 	return new Uint32Array(_w);
@@ -138,6 +144,12 @@ function newPage() {
 	return true;
 }
 
+function clearPages() {
+	$('canvas').remove();
+	ctx = null;
+	pages = maxPages;
+}
+
 function addLine(current) {
 	var px = ctx.getImageData(0, line, chunkWidth , 1);
 
@@ -152,9 +164,43 @@ function addLine(current) {
 	line++;
 }
 
-window.onload = function() {
+var Router = Backbone.Router.extend({
+
+	routes: {
+		"rule/:r(/:again)":    "rule",
+		"random(/:r)":     "random",
+		"another":    "another",
+		"again":      "again",
+		"(/)":        "random",
+	},
+
+	rule: function(r) {
+		rule = r;
+		init();
+	},
+
+	again: function() {
+		this.navigate('rule/' + rule, {trigger: true});
+	},
+
+	random: function() {
+		rule = Math.floor(Math.random() * 256);
+		init();
+	},
+	another: function() {
+		this.navigate('random', {trigger: true});
+	}
+
+
+});
+
+function init() {
+	states = {};
+	line = 0;
+	clearPages();
+
 	document.title = "Rule " + rule + " - " + document.title;
-	document.getElementById('p').innerText = "Rule " + rule;
+	document.getElementById('s').innerHTML = "Rule " + rule + " <a data-bypass=1 href='#rule/" + rule + "'>(link to this rule)</a>";
 
 	var last = createLine();
 
@@ -170,6 +216,29 @@ window.onload = function() {
 	setTimeout(function() { window.scrollTo(0, 0); }, 0);
 	automateTimeout(last);
 }
+
+var app = new Router();
+Backbone.history.start();
+
+var object = {};
+
+_.extend(object, Backbone.Events);
+
+object.on("all", function(msg) {
+  alert("Triggered " + msg);
+});
+
+// https://stackoverflow.com/a/12082118
+$(document).on("click", "a:not([data-bypass])", function(evt) {
+  var href = { prop: $(this).prop("href"), attr: $(this).attr("href") };
+  var root = location.protocol + "//" + location.host + app.root;
+
+  if (href.prop && href.prop.slice(0, root.length) === root) {
+    evt.preventDefault();
+    Backbone.history.navigate(href.attr, true);
+  }
+});
+
 
 </script>
 <style>
