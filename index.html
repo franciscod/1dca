@@ -8,7 +8,7 @@
 	<div>
 		<h4>1dca</h4>
 		<p><span id='s'></span>
-		| <a href='#again'>retry with random data</a> | <a href='#another'>get another rule</a>
+		| <a href='#' id='retry'>retry (same as f5)</a> | <a id='another' href='#'>get another rule</a>
 		</p>
 	</div>
 </body>
@@ -167,30 +167,18 @@ function addLine(current) {
 var Router = Backbone.Router.extend({
 
 	routes: {
-		"rule/:r(/:again)":    "rule",
-		"random(/:r)":     "random",
-		"another":    "another",
-		"again":      "again",
-		"(/)":        "random",
+		"rule/:r": "rule",
+		"(/*foo)":     "rule",
 	},
 
 	rule: function(r) {
 		rule = r;
+		if (!parseInt(r)) {
+			rule = Math.floor(Math.random() * 256);
+			this.navigate('rule/' + rule);
+		}
 		init();
 	},
-
-	again: function() {
-		this.navigate('rule/' + rule, {trigger: true});
-	},
-
-	random: function() {
-		rule = Math.floor(Math.random() * 256);
-		this.navigate('random/' + rule);
-		init();
-	},
-	another: function() {
-		this.navigate('random', {trigger: true});
-	}
 
 
 });
@@ -200,8 +188,8 @@ function init() {
 	line = 0;
 	clearPages();
 
-	document.title = "Rule " + rule + " - " + document.title;
-	document.getElementById('s').innerHTML = "Rule " + rule + " <a data-bypass=1 href='#rule/" + rule + "'>(link to this rule)</a>";
+	document.title = "Rule " + rule + " - 1DCA";
+	document.getElementById('s').innerHTML = "Rule " + rule;
 
 	var last = createLine();
 
@@ -221,23 +209,14 @@ function init() {
 var app = new Router();
 Backbone.history.start();
 
-var object = {};
-
-_.extend(object, Backbone.Events);
-
-object.on("all", function(msg) {
-  alert("Triggered " + msg);
+$('#retry').click(function(e){
+	e.preventDefault();
+	app.rule(rule);
 });
 
-// https://stackoverflow.com/a/12082118
-$(document).on("click", "a:not([data-bypass])", function(evt) {
-  var href = { prop: $(this).prop("href"), attr: $(this).attr("href") };
-  var root = location.protocol + "//" + location.host + app.root;
-
-  if (href.prop && href.prop.slice(0, root.length) === root) {
-    evt.preventDefault();
-    Backbone.history.navigate(href.attr, true);
-  }
+$('#another').click(function(e){
+	e.preventDefault();
+	app.rule();
 });
 
 
