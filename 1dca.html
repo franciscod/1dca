@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>1DCA</title>
+</head>
+<body>
+</body>
+<script>
+/*
+	Copyright 2015 Francisco Demartino
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+var _w  = Math.floor(document.body.clientWidth/32);
+
+var rule = Math.floor(Math.random() * 256);
+
+var chunkWidth  = _w * 32;
+var chunkHeight = 320;
+var pages = -1; // -1 for unlimited
+
+var states = {};
+var line = 0;
+var ctx;
+
+function createLine() {
+	return new Uint32Array(_w);
+}
+
+function getBit(d, i) {
+	return (d[i/32|0] >> (i%32)) & 1;
+}
+
+function setBit(d, i) {
+	d[i/32|0] |= 1<<(i%32);
+	return d;
+}
+
+function serialize(d) {
+	var s = '' + _w + '.';
+	for (var i=0; i<_w; i++) {
+		for (var j=0; j<4; j++) {
+			var cc = (d[i] >> (j * 8)) & 0xFF;
+			s += cc.toString();
+		}
+	}
+	return '' + chunkWidth  + '.' + s;
+}
+
+function _step(d, l, c, r, i) {
+	if (rule >> ( (getBit(d, l) << 2)
+			   | (getBit(d, c) << 1)
+			   | (getBit(d, r) << 0)
+			   ) & 1)
+		return setBit(i, c);
+	return i;
+}
+
+function step(d, w) {
+	var n = createLine();
+
+		n = _step(d, w-1,   0,   1, n);
+	for(i = 1; i < w-1; i++) {
+		n = _step(d, i-1,   i, i+1, n);
+	}
+		n = _step(d, w-2, w-1,   0, n);
+
+	return n;
+}
+
+function automateTimeout(d) {
+	if (_automate(d)) {
+		setTimeout(function() {automateTimeout(step(d, chunkWidth))}, 1);
+	}
+}
+
+function automateWhile(_d) {
+	var d = _d;
+	while(_automate(d)) {
+		d = step(d, chunkWidth);
+	}
+}
+
+function _automate(d) {
+
+	if (line == chunkHeight) {
+		line = 0;
+	}
+
+	if (!line) {
+		if (!newPage()) {
+			document.body.style.backgroundColor = "#EDB";
+			return;
+		}
+	}
+
+	addLine(d);
+
+	var s = serialize(d);
+
+	if (states[s]) {
+		console.log(s);
+		document.body.style.backgroundColor = "#BDE";
+		return;
+	}
+
+	states[s] = 1;
+
+	return true;
+}
+
+function newPage() {
+	if (!pages--) { return false;}
+
+	var canvas = document.createElement('canvas');
+	canvas.width = chunkWidth ;
+	canvas.height = chunkHeight;
+	document.body.appendChild(canvas);
+
+	ctx = canvas.getContext('2d');
+
+	return true;
+}
+
+function addLine(current) {
+	var px = ctx.getImageData(0, line, chunkWidth , 1);
+
+	for (var i = 0; i < chunkWidth ; i++) {
+		px.data[4*i+3] = getBit(current, i) ? 0xFF: 0x00;
+		//for(var j=0; j<3; j++) {
+		//	px.data[4*i+j] = getBit(current, i) ? 0x00: 0xFF;
+		//}
+	}
+
+	ctx.putImageData(px, 0, line);
+	line++;
+}
+
+window.onload = function() {
+	document.title = "Rule " + rule + " - " + document.title;
+
+	var last = createLine();
+
+	for(i = 0; i < chunkWidth -1; i++) {
+		if (Math.random() > .5) {
+			last = setBit(last, i);
+		}
+	}
+
+	document.body.style.backgroundColor = "#EEE";
+
+	automateTimeout(last);
+}
+
+</script>
+<style>
+body {
+	margin: 16px 0;
+	overflow-y: scroll;
+}
+canvas {
+	display: block;
+	margin: auto;
+	image-rendering: pixelated;
+}
+</style>
+</html>
