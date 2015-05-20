@@ -7,9 +7,11 @@
 <body>
 	<div>
 		<h4>1dca</h4>
-		<p><span id='s'></span>
-		| <a href='#' id='retry'>retry (same as f5)</a> | <a id='another' href='#'>get another rule</a>
-		</p>
+			<p id='r'></p>
+			<p>
+				<a href='#' id='retry'>retry (same as f5)</a> | <a id='another' href='#'>get another rule</a> <br>
+			</p>
+			<p id='s'></p>
 	</div>
 </body>
 <script src='js/underscore-min.js'></script>
@@ -171,6 +173,57 @@ function addLine(current) {
 	line++;
 }
 
+function bitJoin(bs, reverse) {
+	var m = reverse ? -1 : 1;
+	var s = reverse ?  7 : 0;
+
+	var ac = 0;
+	for (var i = 0; i<8; i++) {
+	  ac |= (bs[i] << (s + m*i));
+	}
+	return ac;
+}
+
+function bitSplit(n) {
+	var bs = [];
+
+	for (var i = 0; i<8; i++) {
+		bs[i] = (n >> i) & 1;
+	}
+	return bs;
+}
+
+function family(rule) {
+
+	//  7   6   5   4   3   2   1   0
+	// 111 110 101 100 011 010 001 000
+
+	//  A   B   C   D   E   F   G   H    rule
+	//  A   E   C   G   B   F   D   H    mirror   (flipped on x axis)
+	// ¬H  ¬G  ¬F  ¬E  ¬D  ¬C  ¬B  ¬A    negative  (inverted zeros and ones)
+
+	var mirror = function(n) {
+		var bs = bitSplit(n);
+		var _mirror_bs = _.clone(bs);
+		_mirror_bs[6] = bs[3];
+		_mirror_bs[4] = bs[1];
+		_mirror_bs[3] = bs[6];
+		_mirror_bs[1] = bs[4];
+		return bitJoin(_mirror_bs);
+	};
+
+	var negative = function(n) {
+		return bitJoin(bitSplit(n ^ ((1 << 8) - 1)), true);
+	};
+
+	return {
+		mirror: mirror(rule),
+		negative: negative(rule),
+		mirgative: mirror(negative(rule))
+	};
+
+}
+
 var Router = Backbone.Router.extend({
 
 	routes: {
@@ -186,7 +239,7 @@ var Router = Backbone.Router.extend({
 		}
 		init();
 	},
-
+	
 
 });
 
@@ -197,7 +250,13 @@ function init() {
 	clearPages();
 
 	document.title = "Rule " + rule + " - 1DCA";
-	document.getElementById('s').innerHTML = "Rule " + rule;
+	var f = family(rule);
+	document.getElementById('r').innerHTML = "Rule " + rule;
+	document.getElementById('s').innerHTML = "related: <a href='#rule/"  + f.negative + "'>" + f.negative + " (negative)</a>";
+	if (f.mirror != rule) {
+		document.getElementById('s').innerHTML += " - <a href='#rule/"  + f.mirror + "'>" + f.mirror + " (mirror)</a>";
+		document.getElementById('s').innerHTML += " - <a href='#rule/"  + f.mirgative + "'>" + f.mirgative + " (mirr-gative?)</a>";
+	}
 
 	var last = createLine();
 
