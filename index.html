@@ -47,6 +47,12 @@ var line;
 var ctx;
 var pages;
 
+var inequivalents = (function(){
+	return _.uniq(_.map(_.range(256), function(n) {
+		return _.min(_.values(family(n)));
+	}));
+})();
+
 function createLine() {
 	return new Uint32Array(_w);
 }
@@ -218,6 +224,7 @@ function family(rule) {
 	};
 
 	return {
+		itself: rule,
 		mirrored: mirrored(rule),
 		complementary: complementary(rule),
 		mirroredComplementary: mirrored(complementary(rule))
@@ -235,7 +242,7 @@ var Router = Backbone.Router.extend({
 	rule: function(r) {
 		rule = r;
 		if (!parseInt(r)) {
-			rule = Math.floor(Math.random() * 256);
+			rule = _.sample(inequivalents);
 			this.navigate('rule/' + rule);
 		}
 		init();
