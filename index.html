@@ -218,7 +218,7 @@ function family(rule) {
 	return {
 		mirror: mirror(rule),
 		negative: negative(rule),
-		mirgative: mirror(negative(rule))
+		mirrgative: mirror(negative(rule))
 	};
 
 }
@@ -262,8 +262,8 @@ function init() {
 		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirror + "'>" + f.mirror + " (mirror)</a>";
 	}
 
-	if (f.mirgative != f.mirror) {
-		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirgative + "'>" + f.mirgative + " (mirr-gative?)</a>";
+	if (f.mirrgative != f.mirror) {
+		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirrgative + "'>" + f.mirrgative + " (mirr-gative?)</a>";
 	}
 
 	var last = createLine();
