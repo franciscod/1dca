@@ -5,13 +5,9 @@
 <title>1DCA</title>
 </head>
 <body>
-	<div>
-		<h3 id='r'></h3>
-		<p>
-			<a href='#' id='retry'>refresh</a> | <a id='another' href='#'>get another rule</a> <br>
-		</p>
-		<p id='s'></p>
-	</div>
+	<h3 id='r'></h3>
+	<p><a href='#' id='retry'>refresh</a> | <a id='another' href='#'>get another rule</a></p>
+	<p id='s'></p>
 </body>
 <script src='js/underscore-min.js'></script>
 <script src='js/backbone-min.js'></script>
@@ -259,7 +255,7 @@ function init() {
 
 	var f = family(rule);
 
-	document.getElementById('s').innerHTML = "related:";
+	document.getElementById('s').innerHTML = "";
 
 	if (f.mirrored != rule) {
 		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirrored + "'>" + f.mirrored + " (mirrored)</a>";
@@ -307,6 +303,7 @@ div {
 	margin: 0 16px;
 }
 body {
+	text-align: center;
 	margin: 16px 0;
 	overflow-y: scroll;
 }
