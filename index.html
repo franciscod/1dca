@@ -45,6 +45,7 @@ var chunkWidth  = _w * 32;
 var chunkHeight = 160;
 var maxPages = -1; // -1 for unlimited
 
+var cycling;
 var states;
 var line;
 var ctx;
@@ -109,9 +110,15 @@ function automateWhile(_d) {
 }
 
 function _automate(d) {
+	var s = serialize(d);
 
 	if (line == chunkHeight) {
 		line = 0;
+
+		if (cycling) {
+			return;
+		}
+
 		if (!newPage()) {
 			document.body.style.backgroundColor = "#EDB";
 			return;
@@ -120,11 +127,10 @@ function _automate(d) {
 
 	addLine(d);
 
-	var s = serialize(d);
 
 	if (states[s]) {
 		document.body.style.backgroundColor = "#BDE";
-		return;
+		cycling = 1;
 	}
 
 	states[s] = 1;
@@ -245,6 +251,7 @@ var Router = Backbone.Router.extend({
 function init() {
 	states = {};
 	line = 0;
+	cycling = 0;
 	clearDrawTimeouts();
 	clearPages();
 
