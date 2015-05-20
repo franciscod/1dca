@@ -8,7 +8,7 @@
 	<div>
 		<h3 id='r'></h3>
 		<p>
-			<a href='#' id='retry'>retry (same as f5)</a> | <a id='another' href='#'>get another rule</a> <br>
+			<a href='#' id='retry'>refresh</a> | <a id='another' href='#'>get another rule</a> <br>
 		</p>
 		<p id='s'></p>
 	</div>
@@ -257,12 +257,13 @@ function init() {
 	if (f.negative != rule) {
 		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.negative + "'>" + f.negative + " (negative)</a>";
 	}
+
 	if (f.mirror != rule) {
-		document.getElementById('s').innerHTML += " - <a href='#rule/"  + f.mirror + "'>" + f.mirror + " (mirror)</a>";
+		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirror + "'>" + f.mirror + " (mirror)</a>";
 	}
 
 	if (f.mirgative != f.mirror) {
-		document.getElementById('s').innerHTML += " - <a href='#rule/"  + f.mirgative + "'>" + f.mirgative + " (mirr-gative?)</a>";
+		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirgative + "'>" + f.mirgative + " (mirr-gative?)</a>";
 	}
 
 	var last = createLine();
