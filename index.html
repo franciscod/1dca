@@ -254,15 +254,15 @@ function init() {
 
 	document.getElementById('s').innerHTML = "related:";
 
-	if (f.negative != rule) {
-		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.negative + "'>" + f.negative + " (negative)</a>";
-	}
-
 	if (f.mirror != rule) {
 		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirror + "'>" + f.mirror + " (mirror)</a>";
 	}
 
-	if (f.mirrgative != f.mirror) {
+	if (f.negative != rule) {
+		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.negative + "'>" + f.negative + " (negative)</a>";
+	}
+
+	if ((f.mirror != f.mirrgative) && (f.negative != f.mirrgative)) {
 		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirrgative + "'>" + f.mirrgative + " (mirr-gative?)</a>";
 	}
 
