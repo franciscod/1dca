@@ -185,6 +185,7 @@ var Router = Backbone.Router.extend({
 
 	random: function() {
 		rule = Math.floor(Math.random() * 256);
+		this.navigate('random/' + rule);
 		init();
 	},
 	another: function() {
