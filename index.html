@@ -28,7 +28,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var _w  = Math.floor(document.body.clientWidth/32);
+var scaleFactor = 2;
+
+var _w  = Math.floor(document.body.clientWidth/32/scaleFactor);
 
 var rule = Math.floor(Math.random() * 256);
 
@@ -132,6 +134,7 @@ function newPage() {
 	var canvas = document.createElement('canvas');
 	canvas.width = chunkWidth ;
 	canvas.height = chunkHeight;
+	canvas.style.zoom = scaleFactor;
 	document.body.appendChild(canvas);
 
 	ctx = canvas.getContext('2d');
