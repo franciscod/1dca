@@ -204,27 +204,27 @@ function family(rule) {
 	// 111 110 101 100 011 010 001 000
 
 	//  A   B   C   D   E   F   G   H    rule
-	//  A   E   C   G   B   F   D   H    mirror   (flipped on x axis)
-	// ¬H  ¬G  ¬F  ¬E  ¬D  ¬C  ¬B  ¬A    negative  (inverted zeros and ones)
+	//  A   E   C   G   B   F   D   H    mirrored  (reflection through a vertical axis)
+	// ¬H  ¬G  ¬F  ¬E  ¬D  ¬C  ¬B  ¬A    complementary  (exchange of the roles of 0 and 1)
 
-	var mirror = function(n) {
+	var mirrored = function(n) {
 		var bs = bitSplit(n);
-		var _mirror_bs = _.clone(bs);
-		_mirror_bs[6] = bs[3];
-		_mirror_bs[4] = bs[1];
-		_mirror_bs[3] = bs[6];
-		_mirror_bs[1] = bs[4];
-		return bitJoin(_mirror_bs);
+		var _mirrored_bs = _.clone(bs);
+		_mirrored_bs[6] = bs[3];
+		_mirrored_bs[4] = bs[1];
+		_mirrored_bs[3] = bs[6];
+		_mirrored_bs[1] = bs[4];
+		return bitJoin(_mirrored_bs);
 	};
 
-	var negative = function(n) {
+	var complementary = function(n) {
 		return bitJoin(bitSplit(n ^ ((1 << 8) - 1)), true);
 	};
 
 	return {
-		mirror: mirror(rule),
-		negative: negative(rule),
-		mirrgative: mirror(negative(rule))
+		mirrored: mirrored(rule),
+		complementary: complementary(rule),
+		mirroredComplementary: mirrored(complementary(rule))
 	};
 
 }
@@ -261,16 +261,16 @@ function init() {
 
 	document.getElementById('s').innerHTML = "related:";
 
-	if (f.mirror != rule) {
-		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirror + "'>" + f.mirror + " (mirror)</a>";
+	if (f.mirrored != rule) {
+		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirrored + "'>" + f.mirrored + " (mirrored)</a>";
 	}
 
-	if (f.negative != rule) {
-		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.negative + "'>" + f.negative + " (negative)</a>";
+	if (f.complementary != rule) {
+		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.complementary + "'>" + f.complementary + " (complementary)</a>";
 	}
 
-	if ((f.mirror != f.mirrgative) && (f.negative != f.mirrgative)) {
-		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirrgative + "'>" + f.mirrgative + " (mirr-gative?)</a>";
+	if ((f.mirrored != f.mirroredComplementary) && (f.complementary != f.mirroredComplementary)) {
+		document.getElementById('s').innerHTML += " <a href='#rule/"  + f.mirroredComplementary + "'>" + f.mirroredComplementary + " (mirrored complementary)</a>";
 	}
 
 	var last = createLine();
